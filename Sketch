@@ -1,0 +1,70 @@
+#include <Wire.h>
+#include <LCD.h>
+#include <LiquidCrystal_I2C.h>
+
+#define I2C_ADDR    0x3F // <<----- Add your address here.  Find it from I2C Scanner
+#define BACKLIGHT_PIN     3
+#define En_pin  2
+#define Rw_pin  1
+#define Rs_pin  0
+#define D4_pin  4
+#define D5_pin  5
+#define D6_pin  6
+#define D7_pin  7
+
+int n = 1;
+
+LiquidCrystal_I2C  lcd(I2C_ADDR,En_pin,Rw_pin,Rs_pin,D4_pin,D5_pin,D6_pin,D7_pin);
+
+int led = 13;
+int led2 = 7;
+int rele = 8;
+
+
+
+void setup() {
+  lcd.begin (16,2); //  <<----- Mi LCD es 16x2
+  lcd.setBacklightPin(BACKLIGHT_PIN,POSITIVE);
+  lcd.setBacklight(HIGH);
+  lcd.home (); // ir a inicio 
+  lcd.setCursor (2, 0);
+  lcd.print ("Prueba Pantalla");
+Serial.begin(9600);
+pinMode (led, OUTPUT);
+pinMode (led2, OUTPUT);
+pinMode (rele, OUTPUT);
+digitalWrite (rele, HIGH);
+}
+
+void loop() {
+int HumedadBruta = analogRead (A0);
+int HumedadReal = map(HumedadBruta, 1017,0,0,100); //map = (nombre del valor, Maximo del Valor, Minimo del Valor, Minimo de la nueva escala de medida, Maximo de la nueva escala de medida);
+ Serial.println (HumedadBruta);
+ Serial.println (HumedadReal);
+ Serial.println ("%");
+ delay (100);
+
+if (HumedadReal < 30)
+{ digitalWrite (led, HIGH);
+  digitalWrite (rele, LOW);
+}else{
+  digitalWrite (led, LOW);
+  digitalWrite (rele, HIGH);
+  
+}
+
+if (HumedadReal >30)
+{ digitalWrite (led2, HIGH);
+}else{
+  digitalWrite (led2, LOW);
+}
+
+lcd.setCursor (0, 1);
+lcd.print ("Hum. Tierra: ");
+lcd.setCursor (12, 1);
+lcd.println (HumedadReal);
+lcd.print ("%");
+
+}
+
+
